@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackwell VPN | تانل امنیتی پیشرفته</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* --- تنظیمات اولیه و فونت --- */
+        @import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css');
+
+        :root {
+            --primary-color: #00ff88; /* سبز نئونی */
+            --secondary-color: #00d2ff; /* آبی سایبری */
+            --bg-color: #050505;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text-color: #e0e0e0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Vazirmatn', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            line-height: 1.6;
+            user-select: none;
+        }
+
+        /* --- پس‌زمینه متحرک --- */
+        #canvas-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        /* --- هدر و نویگیشن --- */
+        header {
+            display: flex;
+            justify-content: center;
+            align-items: right;
+            padding: 20px 5%;
+            background: transparent;
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary-color);
+            color: #000;
+            box-shadow: 0 0 15px var(--primary-color);
+        }
+
+        /* --- بخش اصلی (Hero) --- */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .hero span {
+            color: var(--secondary-color);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin-bottom: 40px;
+            color: #aaa;
+        }
+
+        .cta-button {
+            background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
+            color: #000;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
+            transition: transform 0.2s;
+            text-decoration: none;
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+        }
+
+        /* --- شبیه‌ساز ترمینال --- */
+        .terminal-container {
+            width: 80%;
+            max-width: 700px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 50px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            font-family: 'Courier New', Courier, monospace;
+            text-align: left;
+            direction: ltr;
+        }
+
+        .terminal-header {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .red { background: #ff5f56; }
+        .yellow { background: #ffbd2e; }
+        .green { background: #27c93f; }
+
+        .terminal-body {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            height: 120px;
+            overflow: hidden;
+        }
+
+        /* --- ویژگی‌ها (Features) --- */
+        .features {
+            padding: 80px 10%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--secondary-color);
+            box-shadow: 0 5px 20px rgba(0, 210, 255, 0.1);
+        }
+
+        .card i {
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        .card p {
+            font-size: 0.95rem;
+            color: #ccc;
+        }
+
+        /* --- بخش فنی تانل --- */
+        .tech-section {
+            padding: 100px 10%;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(180deg, transparent, rgba(0, 210, 255, 0.05));
+        }
+
+        .tech-text {
+            flex: 1;
+            min-width: 300px;
+            padding-left: 40px;
+        }
+
+        .tech-text h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .tech-visual {
+            flex: 1;
+            min-width: 300px;
+            text-align: center;
+        }
+
+        .tech-visual img {
+            max-width: 100%;
+            filter: drop-shadow(0 0 15px var(--secondary-color));
+            /* Placeholder styling */
+            border-radius: 20px;
+            border: 2px dashed var(--secondary-color);
+            padding: 20px;
+        }
+
+        /* --- فوتر --- */
+        footer {
+            padding: 40px;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: 50px;
+            color: #777;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .tech-section { flex-direction: column-reverse; }
+            .tech-text { padding-left: 0; padding-top: 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas-bg"></canvas>
+
+    <header>
+        <div class="logo">Blackwell <span style="color:var(--primary-color)">VPN</span></div>
+    </header>
+
+    <section class="hero">
+        <h1>قدرت اینترنت آزاد با <br><span>Blackwell Tunnel</span></h1>
+        <p>تکنولوژی انحصاری تانلینگ برای عبور از سخت‌ترین فایروال‌ها با پینگ فوق‌العاده پایین و رمزنگاری نظامی.</p>
+        <a href="https://t.me/netsafe_support" class="cta-button">شروع کنید</a>
+
+        <div class="terminal-container">
+            <div class="terminal-header">
+                <div class="dot red"></div>
+                <div class="dot yellow"></div>
+                <div class="dot green"></div>
+            </div>
+            <div class="terminal-body" id="console-output">
+                </div>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="card">
+            <i class="fas fa-shield-alt"></i>
+            <h3>رمزنگاری کوانتومی</h3>
+            <p>داده‌های شما با الگوریتم‌های Blackwell AES-512 رمزگذاری می‌شوند تا هیچ شخص ثالثی قادر به شنود نباشد.</p>
+        </div>
+        <div class="card">
+            <i class="fas fa-bolt"></i>
+            <h3>تکنولوژی Turbo Tunnel</h3>
+            <p>برخلاف VPNهای معمولی، تانل Blackwell ترافیک را فشرده می‌کند تا سرعت اینترنت شما حتی افزایش یابد.</p>
+        </div>
+        <div class="card">
+            <i class="fas fa-ghost"></i>
+            <h3>نامرئی بودن کامل</h3>
+            <p>پروتکل ما هدرهای بسته (Packet Headers) را تغییر می‌دهد تا ترافیک شما شبیه به مرور عادی وب (HTTPS) به نظر برسد.</p>
+        </div>
+    </section>
+
+    <section class="tech-section">
+        <div class="tech-text">
+            <h2>مکانیزم Blackwell چطور کار می‌کند؟</h2>
+            <p>
+                هنگامی که شما متصل می‌شوید، <strong>Blackwell Core</strong> یک تونل مجازی (Virtual Tunnel) بین دستگاه شما و سرورهای ابری ما ایجاد می‌کند.
+            </p>
+            <br>
+            <ul style="list-style: none;">
+                <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color:var(--primary-color); margin-left:10px;"></i> <strong>مبهم‌سازی (Obfuscation):</strong> تغییر الگوی ترافیک برای دور زدن DPI.</li>
+                <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color:var(--primary-color); margin-left:10px;"></i> <strong>مسیردهی هوشمند:</strong> انتخاب خودکار کم‌ترافیک‌ترین سرور.</li>
+                <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color:var(--primary-color); margin-left:10px;"></i> <strong>Kill Switch فعال:</strong> قطع آنی اینترنت در صورت اختلال در تانل.</li>
+            </ul>
+        </div>
+        <div class="tech-visual">
+            <div style="font-size: 5rem; color: var(--secondary-color);">
+                <i class="fas fa-network-wired"></i>
+            </div>
+            <p style="margin-top: 10px; font-weight: bold;">Blackwell Node Structure</p>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2026 Blackwell VPN Project. تمامی حقوق محفوظ است.</p>
+        <p style="font-size: 0.8rem; margin-top: 10px;">طراحی شده توسط Netsafe iAliax</p>
+    </footer>
+
+    <script>
+        // --- 1. انیمیشن پس زمینه (شبکه تانل) ---
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+
+        let particlesArray;
+
+        // تنظیم اندازه بوم
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.directionX = (Math.random() * 0.4) - 0.2;
+                this.directionY = (Math.random() * 0.4) - 0.2;
+                this.size = Math.random() * 2;
+                this.color = '#00d2ff';
+            }
+            // متد رسم
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+            // متد حرکت
+            update() {
+                if (this.x > canvas.width || this.x < 0) {
+                    this.directionX = -this.directionX;
+                }
+                if (this.y > canvas.height || this.y < 0) {
+                    this.directionY = -this.directionY;
+                }
+                this.x += this.directionX;
+                this.y += this.directionY;
+                this.draw();
+            }
+        }
+
+        function init() {
+            particlesArray = [];
+            let numberOfParticles = (canvas.height * canvas.width) / 9000;
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, innerWidth, innerHeight);
+
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+            }
+            connect();
+        }
+
+        // رسم خطوط بین نقاط نزدیک (شبیه‌سازی شبکه)
+        function connect() {
+            let opacityValue = 1;
+            for (let a = 0; a < particlesArray.length; a++) {
+                for (let b = a; b < particlesArray.length; b++) {
+                    let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x)) +
+                                   ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+                    if (distance < (canvas.width/7) * (canvas.height/7)) {
+                        opacityValue = 1 - (distance / 20000);
+                        ctx.strokeStyle = 'rgba(0, 255, 136,' + opacityValue + ')';
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                        ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        window.addEventListener('resize', function(){
+            canvas.width = innerWidth;
+            canvas.height = innerHeight;
+            init();
+        });
+
+        init();
+        animate();
+
+        // --- 2. شبیه‌ساز لاگ کنسول ---
+        const logs = [
+            "> Initializing Blackwell Protocol v1.0.0...",
+            "> Handshake with secure server [Frankfurt-Node-01]...",
+            "> Verifying user credentials...",
+            "> Generating keys...",
+            "> Tunnel established successfully.",
+            "> Traffic obfuscation: ENABLED.",
+            "> Latency: 42ms | Jitter: 2ms",
+            "> Ready to secure connection."
+        ];
+        
+        const consoleOutput = document.getElementById('console-output');
+        let logIndex = 0;
+
+        function addLog() {
+            if (logIndex < logs.length) {
+                const p = document.createElement('p');
+                p.textContent = logs[logIndex];
+                p.style.marginBottom = '5px';
+                // افکت تایپ
+                consoleOutput.appendChild(p);
+                consoleOutput.scrollTop = consoleOutput.scrollHeight;
+                logIndex++;
+                setTimeout(addLog, 800); // سرعت اضافه شدن خطوط
+            } else {
+                // ریست کردن لاگ برای تکرار
+                setTimeout(() => {
+                    consoleOutput.innerHTML = '';
+                    logIndex = 0;
+                    addLog();
+                }, 5000);
+            }
+        }
+        addLog();
+
+    </script>
+</body>
+</html>
